@@ -7,6 +7,7 @@ import { store } from './store';
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
+      <h1>hhhhhhhhhhhhhhh</h1>
       <App />
     </Provider>
   </React.StrictMode>,

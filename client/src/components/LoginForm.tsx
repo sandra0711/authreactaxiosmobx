@@ -1,13 +1,13 @@
 import React, { FC, useState } from 'react';
-import { useAppSelector, useAppDispatch } from '../hooks/redux';
-import userReducer from '../store/slices/userSlice';
+import { useAppDispatch } from '../hooks/redux';
+// import userReducer from '../store/slices/userSlice';
 import { fetchLogin, fetchRegister } from '../store/slices/userSlice';
 
 const LoginForm: FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const dispatch = useAppDispatch();
-  const store = useAppSelector(state => state.user);
+  // const store = useAppSelector(state => state.user);
 
   return (
     <div>

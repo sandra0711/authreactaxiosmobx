@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { IUser } from "../../models/IUser";
 import AuthService from "../../service/AuthService";
 
@@ -44,13 +44,11 @@ export const fetchRegister = createAsyncThunk(
   });
 
 export const fetchLogout = createAsyncThunk(
-  'user/register',
+  'user/logout',
   async () => {
     try {
       await AuthService.logout();
       localStorage.removeItem('token');
-      console.log('я здесь');
-
     } catch (e: any) {
       throw new Error('это ошибка из функции регистрации');
     }
@@ -60,32 +58,8 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setAuth(state, action: PayloadAction<boolean>) {
-      state.isAuth = action.payload;
-
-    },
-
-    setUser(state, action: PayloadAction<IUser>) {
-      state.user = action.payload;
-    },
-
-    setIsLoading(state, action: PayloadAction<boolean>) {
-      state.isLoading = action.payload;
-    },
   },
-  // extraReducers: {
-  //   [fetchLogin.fulfilled]: (state: UserState, action: PayloadAction<IUser>) => {
-  //     state.isLoading = false;
-  //     state.user = action.payload;
-  //   },
-  //   [fetchLogin.pending]: (state: UserState) => {
-  //     state.isLoading = true;
 
-  //   },
-  //   [fetchLogin.rejected]: (state: UserState, action: PayloadAction<string>) => {
-  //     console.log(action.payload);
-
-  //   },
   extraReducers: (builder) => {
     builder.addCase(fetchLogin.pending, (state) => {
       state.isLoading = true;
@@ -96,7 +70,7 @@ const userSlice = createSlice({
     });
     builder.addCase(fetchLogin.rejected, (state, action) => {
       state.isLoading = false;
-      console.log(action);
+      console.log(action.error.message);
     });
 
     builder.addCase(fetchRegister.pending, (state) => {
@@ -108,28 +82,30 @@ const userSlice = createSlice({
     });
     builder.addCase(fetchRegister.rejected, (state, action) => {
       state.isLoading = false;
-      console.log(action.payload);
+      console.log(action.error.message);
+    });
+
+    builder.addCase(fetchLogout.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(fetchLogout.fulfilled, (state) => {
+      state.user = {
+        email: '',
+        isActivated: false,
+        id: '',
+      };
+      state.isLoading = false;
+    });
+    builder.addCase(fetchLogout.rejected, (state, action) => {
+      state.isLoading = false;
+      console.log(action.error.message);
     });
   },
 
 });
 
-export const { setUser, setAuth, setIsLoading } = userSlice.actions;
 export default userSlice.reducer;
 
-
-//
-
-//   async register(email: string, password: string) {
-//     try {
-//       const response = await AuthService.register(email, password);
-//       localStorage.setItem('token', response.data.accessToken);
-//       this.setAuth(true);
-//       this.setUser(response.data.user);
-//     } catch (e: any) {
-//       console.log(e.response?.data?.message);
-//     }
-//   };
 
 //   async checkAuth() {
 //     this.setIsLoading(true);
@@ -145,14 +121,3 @@ export default userSlice.reducer;
 //     }
 //   };
 
-//   async logout() {
-//     try {
-//       await AuthService.logout();
-//       localStorage.removeItem('token');
-//       this.setAuth(false);
-//       this.setUser({} as IUser);
-//     } catch (e: any) {
-//       console.log(e.response?.data?.message);
-//     }
-//   };
-// }
